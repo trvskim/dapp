@@ -103,6 +103,22 @@ export default function DApp() {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
+      const fetchData = async () => {
+        try {
+          const adrs = accounts[0];
+          const response = await fetch(`/api/adrsCheck?adrs=${adrs}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const result = await response.json();
+          //setInformation(result); // 데이터를 상태로 저장합니다.
+          //console.log(result);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+
+      fetchData();
       setAccount(accounts[0]);
     } catch (error) {
       console.error("지갑 연결 중 오류 발생", error);
