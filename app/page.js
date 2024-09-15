@@ -84,6 +84,8 @@ export default function DApp() {
   const approveAmount = Web3.utils.toWei("1000000", "mwei");
 
   useEffect(() => {
+    alert(window.web3)
+    alert(window.ethereum)
     if (typeof window.ethereum !== "undefined") {
       const web3Instance = new Web3(window.ethereum);
       setWeb3(web3Instance);
